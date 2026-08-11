@@ -33,3 +33,5 @@ data/*
 # Temporary files
 *.tmp
 *.temp
+
+backend/models/
