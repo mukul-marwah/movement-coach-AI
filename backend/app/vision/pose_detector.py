@@ -4,7 +4,6 @@ import mediapipe as mp
 from vision.landmarks import extract_landmarks
 from analysis.geometry import calculate_angle
 from analysis.movement_data import create_frame_data
-from analysis.movement_data import create_frame_data
 
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
@@ -91,6 +90,11 @@ def process_video(video_path):
                 )
                 image_landmarks = results.pose_landmarks[0]
                 world_landmarks = results.pose_world_landmarks[0]
+
+                fps = cap.get(cv2.CAP_PROP_FPS)
+                timestamp_ms = int(
+                    frame_number * 1000 / fps
+                )
 
                 frame_data = create_frame_data(
                     frame_number,

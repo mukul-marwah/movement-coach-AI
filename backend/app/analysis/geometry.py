@@ -36,7 +36,7 @@ def calculate_distance(point_a, point_b):
     dy = point_a['y'] - point_b['y']
     dz = point_a['z'] - point_b['z']
 
-    return math.sprt(
+    return math.sqrt(
         dx * dx + 
         dy * dy + 
         dz * dz

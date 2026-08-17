@@ -1,5 +1,3 @@
-import cv2
-
 def landmark_to_dict(landmark):
 
     return {
@@ -14,12 +12,6 @@ def landmarks_to_dict(landmarks):
 
 
 def create_frame_data(frame_number, timestamp_ms, image_landmarks, world_landmarks):
-
-    cap = cv2.VideoCapture('squat.mp4')
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    timestamp_ms = int(
-        frame_number * 1000 / fps
-    )
 
     return {
         "frame": frame_number,
