@@ -1,0 +1,1 @@
+from vision.pose_detector import process_video
