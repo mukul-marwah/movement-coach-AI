@@ -1,7 +1,7 @@
 import math
 
 def calculate_angle(point_a, point_b, point_c):
-    # To calculate the angle at point_b fomed
+    # To calculate the angle formed at point_b
 
     vector_ba = (
         point_a['x'] - point_b['x'],

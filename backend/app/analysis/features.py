@@ -1,4 +1,4 @@
-from analysis.geometry import (calculate_angle, calculate_distance,)
+from analysis.geometry import calculate_angle, calculate_distance
 
 
 def joint_angle(landmarks, first, middle, last):

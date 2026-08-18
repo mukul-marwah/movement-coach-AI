@@ -1,4 +1,4 @@
-from analysis.geometry import calculate_angle
+from analysis.geometry import calculate_angle, calculate_distance
 
 def main():
 
@@ -8,6 +8,9 @@ def main():
 
     angle = calculate_angle(point_a, point_b, point_c)
     print(f"Calculated angle: {angle:.2f} degrees")
+
+    distance = calculate_distance(point_a, point_b)
+    print(f"Calculated distance: {distance:.2f}")
 
 if __name__ == "__main__":
     main()

@@ -20,6 +20,10 @@ def process_video(video_path):
     if not cap.isOpened():
         raise ValueError(f"Could not open video: {video_path}")
 
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if fps <= 0:
+        raise ValueError("Could not determine video FPS")
+
     # Original video dimensions
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -85,31 +89,29 @@ def process_video(video_path):
             # Draw the complete pose skeleton.
             if results.pose_landmarks:
 
-                landmarks = extract_landmarks(
-                results.pose_landmarks
-                )
-                image_landmarks = results.pose_landmarks[0]
-                world_landmarks = results.pose_world_landmarks[0]
+                image_landmarks = extract_landmarks(results.pose_landmarks)
+                world_landmarks = None
+                if results.pose_world_landmarks:
+                    world_landmarks = extract_landmarks(results.pose_world_landmarks)
 
-                fps = cap.get(cv2.CAP_PROP_FPS)
-                timestamp_ms = int(
-                    frame_number * 1000 / fps
-                )
+                timestamp_ms = int(frame_number * 1000 / fps)
 
-                frame_data = create_frame_data(
-                    frame_number,
-                    timestamp_ms,
-                    image_landmarks,
-                    world_landmarks,
-                )
+                if world_landmarks:
+                    frame_data = create_frame_data(
+                        frame_number,
+                        timestamp_ms,
+                        image_landmarks,
+                        world_landmarks if world_landmarks else [],
+                    )
+                    movement_data.append(frame_data)
 
                 left_knee_angle = calculate_angle(
-                    landmarks[23],  # Left hip
-                    landmarks[25],  # Left knee
-                    landmarks[27],  # Left ankle
+                    image_landmarks[23],  # Left hip
+                    image_landmarks[25],  # Left knee
+                    image_landmarks[27],  # Left ankle
                 )
-
-                knee_angles.append(left_knee_angle)
+                if left_knee_angle is not None:
+                    knee_angles.append(left_knee_angle)
 
                 mp_drawing.draw_landmarks(
                     frame,
@@ -126,12 +128,14 @@ def process_video(video_path):
                 "Movement Coach - Pose Detection",
                 frame
             )
-
+            
             # Q = quit
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
-    frame_number += 1
+            frame_number += 1
+
+    
 
     cap.release()
     cv2.destroyAllWindows()
@@ -151,5 +155,6 @@ def process_video(video_path):
     if movement_data:
         print(
             "Landmarks in first frame:",
-            len(movement_data[0]["landmarks"])
+            len(movement_data[0]["image_landmarks"])
         )
+    return movement_data
