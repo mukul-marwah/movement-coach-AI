@@ -15,6 +15,10 @@ def process_video(video_path):
     movement_data = []
     frame_number = 0
 
+    total_frames_processed = 0
+    frames_with_pose = 0
+    frames_with_valid_knee_angle =0
+
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
@@ -72,6 +76,8 @@ def process_video(video_path):
             if not success:
                 break
 
+            total_frames_processed +=1
+
             # OpenCV frame for BGR.
             # MediaPipe for RGB.
             rgb_frame = cv2.cvtColor(
@@ -88,7 +94,7 @@ def process_video(video_path):
 
             # Draw the complete pose skeleton.
             if results.pose_landmarks:
-
+                frames_with_pose +=1
                 image_landmarks = extract_landmarks(results.pose_landmarks)
                 world_landmarks = None
                 if results.pose_world_landmarks:
@@ -96,14 +102,13 @@ def process_video(video_path):
 
                 timestamp_ms = int(frame_number * 1000 / fps)
 
-                if world_landmarks:
-                    frame_data = create_frame_data(
-                        frame_number,
-                        timestamp_ms,
-                        image_landmarks,
-                        world_landmarks if world_landmarks else [],
-                    )
-                    movement_data.append(frame_data)
+                frame_data = create_frame_data(
+                    frame_number,
+                    timestamp_ms,
+                    image_landmarks,
+                    world_landmarks if world_landmarks else [],
+                )
+                movement_data.append(frame_data)
 
                 left_knee_angle = calculate_angle(
                     image_landmarks[23],  # Left hip
@@ -112,6 +117,7 @@ def process_video(video_path):
                 )
                 if left_knee_angle is not None:
                     knee_angles.append(left_knee_angle)
+                    frames_with_valid_knee_angle +=1
 
                 mp_drawing.draw_landmarks(
                     frame,
@@ -140,7 +146,10 @@ def process_video(video_path):
     cap.release()
     cv2.destroyAllWindows()
 
-    print(f"Total frames analyzed: {len(knee_angles)}")
+    print(f"Total frames processed: {total_frames_processed}")
+    print(f"Frames with pose detected: {frames_with_pose}")
+    print(f"Frames with valid knee angle: {frames_with_valid_knee_angle}")
+    print(f"Frames stored: {len(movement_data)}")
 
     if knee_angles:
         print(
