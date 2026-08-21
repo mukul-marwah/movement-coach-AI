@@ -3,6 +3,8 @@ from analysis.features import (joint_angle, landmark_distance, calculate_feature
                                classify_movement_direction, extract_knee_angle_series, 
                                extract_hip_angle_series, extract_feature_series, add_movement_directions,
                                calculate_direction_consensus)
+from analysis.phases import detect_movement_phases
+from analysis.temporal import build_movement_signal, smooth_movement_signal, detect_turning_points
 
 video_path = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\test_videos\squat.mp4"
 
@@ -110,10 +112,53 @@ direction_consensus = calculate_direction_consensus(
     movement_directions
 )
 
+movement_signal = build_movement_signal(feature_series)
+smoothed_signal = smooth_movement_signal(movement_signal, window_size=5)
+turning_points = detect_turning_points(smoothed_signal, min_prominence=0.0)
+
+print("\nMOVEMENT SIGNAL")
+
+for item in smoothed_signal[::5]:
+    print(
+        f"frame={item['frame']} "
+        f"time={item['timestamp_ms']}ms "
+        f"signal={item['value']:.2f}"
+    )
+
+print("\nTURNING POINTS")
+
+if not turning_points:
+    print("No turning points detected.")
+else:
+    print(f"Turning points detected: {len(turning_points)}")
+
+    for point in turning_points:
+        print(
+            f"{point['type']}: "
+            f"frame={point['frame']} "
+            f"time={point['timestamp_ms']}ms "
+            f"value={point['value']:.2f}"
+        )
+
 print("\nDirection consensus:")
 
 for item in direction_consensus[:10]:
     print(item)
+
+print("\nFEATURE TRAJECTORY")
+
+for item in feature_series[::5]:
+    print(
+        f"frame={item['frame']} "
+        f"time={item['timestamp_ms']}ms "
+        f"LK={item['left_knee_angle']:.2f} "
+        f"RK={item['right_knee_angle']:.2f} "
+        f"LH={item['left_hip_angle']:.2f} "
+        f"RH={item['right_hip_angle']:.2f}"
+    )
+
+
+
 
 print("\nEdge-case tests:")
 print("Empty feature series:", calculate_feature_changes([]))
