@@ -1,0 +1,30 @@
+from analysis.mmfit import load_mmfit_pose, load_mmfit_labels
+from analysis.ml_dataset import build_ml_dataset
+from analysis.ml_model import train_exercise_classifier
+
+POSE_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00\w00_pose_3d.npy"
+LABEL_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00/w00_labels.csv"
+
+pose_data = load_mmfit_pose(POSE_PATH)
+labels = load_mmfit_labels(LABEL_PATH)
+
+X, y, skipped = build_ml_dataset(pose_data, labels)
+print("Skipped sequences:", len(skipped))
+print("Total sequences:", len(X))
+print("\nExercise distribution:")
+distribution = {}
+for label in y:
+    distribution[label] = distribution.get(label, 0) + 1
+for exercise, count in sorted(distribution.items()):
+    print(f"{exercise}: {count}")
+for label in skipped:
+    print("Skipped:", label["exercise"], label["start_frame"], label["end_frame"])
+result = train_exercise_classifier(X, y)
+
+print("ML EXERCISE CLASSIFIER")
+print("----------------------")
+print("Training sequences:", result["train_size"])
+print("Testing sequences:", result["test_size"])
+print("Accuracy:", f"{result['accuracy']:.2%}")
+print("\nClassification report:")
+print(result["report"])
