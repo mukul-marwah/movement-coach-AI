@@ -1,6 +1,6 @@
 from analysis.mmfit import load_mmfit_pose, load_mmfit_labels
 from analysis.ml_dataset import build_ml_dataset
-from analysis.ml_model import train_exercise_classifier
+from analysis.ml_model import train_exercise_classifier, predict_exercise
 
 POSE_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00\w00_pose_3d.npy"
 LABEL_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00/w00_labels.csv"
@@ -28,3 +28,7 @@ print("Testing sequences:", result["test_size"])
 print("Accuracy:", f"{result['accuracy']:.2%}")
 print("\nClassification report:")
 print(result["report"])
+
+predicted = predict_exercise(result["model"], X[0])
+print("\nSample prediction:", predicted)
+print("Actual label:", y[0])

@@ -27,3 +27,7 @@ def train_exercise_classifier(X, y, test_size=10, random_state=42):
         "test_size": len(X_test),
         "class_distribution": Counter(y)
     }
+
+def predict_exercise(model, features):
+    features = np.asarray(features, dtype=float).reshape(1, -1)
+    return model.predict(features)[0]
