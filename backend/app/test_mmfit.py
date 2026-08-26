@@ -2,9 +2,13 @@ from analysis.mmfit import ( load_mmfit_pose, load_mmfit_labels,
     select_labeled_sequence, mmfit_3d_to_movement_data, mmfit_squat_features)
 from analysis.temporal import build_movement_signal
 from analysis.repetitions import estimate_cycle_length, detect_repetitions
+from pathlib import Path
 
-POSE_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00\w00_pose_3d.npy"
-LABEL_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00/w00_labels.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MMFIT_DIR = PROJECT_ROOT / "data" / "external" / "mm-fit" / "w00"
+
+POSE_PATH = MMFIT_DIR / "w00_pose_3d.npy"
+LABEL_PATH = MMFIT_DIR / "w00_labels.csv"
 
 pose_3d = load_mmfit_pose(POSE_PATH)
 labels = load_mmfit_labels(LABEL_PATH)

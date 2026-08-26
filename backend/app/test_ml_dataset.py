@@ -1,8 +1,12 @@
 from analysis.mmfit import load_mmfit_pose, load_mmfit_labels
 from analysis.ml_dataset import build_ml_dataset
+from pathlib import Path
 
-POSE_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00\w00_pose_3d.npy"
-LABEL_PATH = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\external\mm-fit\w00/w00_labels.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MMFIT_DIR = PROJECT_ROOT / "data" / "external" / "mm-fit" / "w00"
+
+POSE_PATH = MMFIT_DIR / "w00_pose_3d.npy"
+LABEL_PATH = MMFIT_DIR / "w00_labels.csv"
 
 pose_data = load_mmfit_pose(POSE_PATH)
 labels = load_mmfit_labels(LABEL_PATH)

@@ -1,5 +1,5 @@
 import numpy as np
-from analysis.mmfit import select_labeled_sequence
+from .mmfit import select_labeled_sequence
 
 def build_sequence_features(sequence):
     coordinates = sequence[:, :, 1:]

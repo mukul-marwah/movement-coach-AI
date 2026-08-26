@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
-
+import joblib
 
 def train_exercise_classifier(X, y, test_size=10, random_state=42):
     X = np.asarray(X, dtype=float)
@@ -27,6 +27,12 @@ def train_exercise_classifier(X, y, test_size=10, random_state=42):
         "test_size": len(X_test),
         "class_distribution": Counter(y)
     }
+
+def save_exercise_classifier(model, path):
+    joblib.dump(model, path)
+
+def load_exercise_classifier(path):
+    return joblib.load(path)
 
 def predict_exercise(model, features):
     features = np.asarray(features, dtype=float).reshape(1, -1)

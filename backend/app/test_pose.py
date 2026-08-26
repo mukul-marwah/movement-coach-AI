@@ -1,6 +1,8 @@
 from vision.pose_detector import process_video
+from pathlib import Path
 
-video_path = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\test_videos\squat.mp4"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+video_path = PROJECT_ROOT / "data" / "test_videos" / "squat.mp4"
 
 movement_data = process_video(video_path)
 

@@ -5,8 +5,10 @@ from analysis.features import (joint_angle, landmark_distance, calculate_feature
                                calculate_direction_consensus)
 from analysis.phases import detect_movement_phases
 from analysis.temporal import build_movement_signal, smooth_movement_signal, detect_turning_points
+from pathlib import Path
 
-video_path = r"C:\Users\admin\OneDrive\Documents\movement-coach-ai\data\test_videos\squat.mp4"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+video_path = PROJECT_ROOT / "data" / "test_videos" / "squat.mp4"
 
 movement_data = process_video(video_path)
 
