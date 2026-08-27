@@ -1,17 +1,35 @@
 from typing import Any, Dict, List
 
 MOVEMENT_FEATURES = ("left_knee_angle", "right_knee_angle", "left_hip_angle", "right_hip_angle")
+EXERCISE_MOVEMENT_FEATURES = {
+    "squats": ("left_knee_angle", "right_knee_angle", "left_hip_angle", "right_hip_angle"),
+    "bicep_curls": ("left_elbow_angle", "right_elbow_angle", "left_shoulder_angle", "right_shoulder_angle"),
+    "dumbbell_rows": ("left_elbow_angle", "right_elbow_angle", "left_shoulder_angle",
+        "right_shoulder_angle", "left_body_alignment", "right_body_alignment"),
+    "dumbbell_shoulder_press": ("left_elbow_angle", "right_elbow_angle", "left_shoulder_angle", "right_shoulder_angle"),
+    "jumping_jacks": ("left_shoulder_angle", "right_shoulder_angle", "left_hip_angle", "right_hip_angle"),
+    "lateral_raises": ("left_shoulder_angle", "right_shoulder_angle", "left_elbow_angle", "right_elbow_angle"),
+    "lunges": ("left_knee_angle", "right_knee_angle", "left_hip_angle", "right_hip_angle"),
+    "pushups": ("left_elbow_angle", "right_elbow_angle", "left_shoulder_angle",
+        "right_shoulder_angle", "left_body_alignment", "right_body_alignment"),
+    "situps": ("left_hip_angle", "right_hip_angle", "left_body_alignment", "right_body_alignment"),
+    "tricep_extensions": ("left_elbow_angle", "right_elbow_angle", "left_shoulder_angle", "right_shoulder_angle")
+}
 
 def build_movement_signal(
-    feature_series: List[Dict[str, Any]],
+    feature_series: List[Dict[str, Any]], exercise_id: str = "squats",
 ) -> List[Dict[str, Any]]:
     if not feature_series:
         return []
 
+    movement_features = EXERCISE_MOVEMENT_FEATURES.get(exercise_id)
+    if movement_features is None:
+        raise ValueError(f"Unsupported exercise for movement signal: {exercise_id}")
+
     signal = []
 
     for item in feature_series:
-        values = [item[name] for name in MOVEMENT_FEATURES]
+        values = [item[name] for name in movement_features]
 
         signal.append(
             {

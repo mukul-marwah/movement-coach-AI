@@ -25,17 +25,33 @@ def estimate_cycle_length(movement_signal, min_lag=20, max_lag=80):
     mean = sum(values) / len(values)
     centered = [value - mean for value in values]
 
-    best_lag = None
-    best_score = float("-inf")
-
+    correlations = []
     for lag in range(min_lag, max_lag + 1):
-        score = sum(centered[i] * centered[i - lag] for i in range(lag, len(centered)))
+        numerator = sum(centered[i] * centered[i - lag] for i in range(lag, len(centered)))
+        left_energy = sum(centered[i] ** 2 for i in range(lag, len(centered)))
+        right_energy = sum(centered[i - lag] ** 2 for i in range(lag, len(centered)))
+        denominator = (left_energy * right_energy) ** 0.5
 
-        if score > best_score:
-            best_score = score
-            best_lag = lag
+        if denominator == 0:
+            correlation = 0.0
+        else:
+            correlation = numerator / denominator
 
-    return best_lag
+        correlations.append((lag, correlation))
+
+    local_peaks = []
+
+    for i in range(1, len(correlations) - 1):
+        previous_score = correlations[i - 1][1]
+        current_score = correlations[i][1]
+        next_score = correlations[i + 1][1]
+        if current_score >= previous_score and current_score > next_score:
+            local_peaks.append(correlations[i])
+
+    if not local_peaks:
+        return max(correlations, key=lambda item: item[1])[0]
+
+    return max(local_peaks, key=lambda item: item[1])[0]
 
 
 def detect_repetitions(movement_signal, cycle_length=None, smoothing_window=7,):

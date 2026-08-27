@@ -185,3 +185,184 @@ def calculate_direction_consensus(direction_data):
         })
 
     return results
+
+def body_alignment_angle(shoulder, hip, ankle):
+    return joint_angle(shoulder, hip, ankle)
+
+def extract_pushup_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_elbow_angle": joint_angle(landmarks, 5, 6, 7),
+            "right_elbow_angle": joint_angle(landmarks, 2, 3, 4),
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8),
+            "left_body_alignment": joint_angle(landmarks, 5, 11, 13),
+            "right_body_alignment": joint_angle(landmarks, 2, 8, 10)
+        })
+
+
+    return feature_series
+
+def extract_bicep_curl_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_elbow_angle": joint_angle(landmarks, 5, 6, 7),
+            "right_elbow_angle": joint_angle(landmarks, 2, 3, 4),
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8)
+        })
+
+    return feature_series
+
+def extract_dumbbell_row_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_elbow_angle": joint_angle(landmarks, 5, 6, 7),
+            "right_elbow_angle": joint_angle(landmarks, 2, 3, 4),
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8),
+            "left_body_alignment": joint_angle(landmarks, 5, 11, 13),
+            "right_body_alignment": joint_angle(landmarks, 2, 8, 10),
+        })
+
+    return feature_series
+
+def extract_dumbbell_shoulder_press_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_elbow_angle": joint_angle(landmarks, 5, 6, 7),
+            "right_elbow_angle": joint_angle(landmarks, 2, 3, 4),
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8),
+        })
+
+    return feature_series
+
+def extract_jumping_jack_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8),
+            "left_hip_angle": joint_angle(landmarks, 5, 11, 13),
+            "right_hip_angle": joint_angle(landmarks, 2, 8, 10),
+        })
+
+    return feature_series
+
+def extract_lateral_raise_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8),
+            "left_elbow_angle": joint_angle(landmarks, 5, 6, 7),
+            "right_elbow_angle": joint_angle(landmarks, 2, 3, 4),
+        })
+
+    return feature_series
+
+def extract_lunge_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_knee_angle": joint_angle(landmarks, 5, 8, 10),
+            "right_knee_angle": joint_angle(landmarks, 2, 9, 12),
+            "left_hip_angle": joint_angle(landmarks, 6, 5, 8),
+            "right_hip_angle": joint_angle(landmarks, 3, 2, 9),
+        })
+
+    return feature_series
+
+def extract_situp_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_hip_angle": joint_angle(landmarks, 5, 11, 13),
+            "right_hip_angle": joint_angle(landmarks, 2, 8, 10),
+            "left_body_alignment": joint_angle(landmarks, 5, 11, 13),
+            "right_body_alignment": joint_angle(landmarks, 2, 8, 10),
+        })
+
+    return feature_series
+
+def extract_tricep_extension_features(movement_data):
+    feature_series = []
+
+    for frame_data in movement_data:
+        landmarks = frame_data["world_landmarks"]
+
+        feature_series.append({
+            "frame": frame_data["frame"],
+            "timestamp_ms": frame_data["timestamp_ms"],
+            "left_elbow_angle": joint_angle(landmarks, 5, 6, 7),
+            "right_elbow_angle": joint_angle(landmarks, 2, 3, 4),
+            "left_shoulder_angle": joint_angle(landmarks, 6, 5, 11),
+            "right_shoulder_angle": joint_angle(landmarks, 3, 2, 8),
+        })
+
+    return feature_series
+
+FEATURE_EXTRACTORS = {
+    "squats": extract_feature_series,
+    "bicep_curls": extract_bicep_curl_features,
+    "dumbbell_rows": extract_dumbbell_row_features,
+    "dumbbell_shoulder_press": extract_dumbbell_shoulder_press_features,
+    "jumping_jacks": extract_jumping_jack_features,
+    "lateral_raises": extract_lateral_raise_features,
+    "lunges": extract_lunge_features,
+    "pushups": extract_pushup_features,
+    "situps": extract_situp_features,
+    "tricep_extensions": extract_tricep_extension_features,
+}
+
+
+def extract_exercise_features(exercise_id, movement_data):
+    extractor = FEATURE_EXTRACTORS.get(exercise_id)
+    if extractor is None:
+        raise ValueError(f"Unsupported exercise: {exercise_id}")
+
+    return extractor(movement_data)
