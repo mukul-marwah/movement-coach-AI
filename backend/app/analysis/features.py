@@ -1,4 +1,4 @@
-from analysis.geometry import calculate_angle, calculate_distance
+from .geometry import calculate_angle, calculate_distance
 
 
 def joint_angle(landmarks, first, middle, last):
@@ -366,3 +366,16 @@ def extract_exercise_features(exercise_id, movement_data):
         raise ValueError(f"Unsupported exercise: {exercise_id}")
 
     return extractor(movement_data)
+
+def summarize_exercise_features(feature_series):
+    if not feature_series:
+        return {}
+
+    summary = {}
+    feature_names = [key for key in feature_series[0] if key not in ("frame", "timestamp_ms")]
+
+    for name in feature_names:
+        values = [item[name] for item in feature_series]
+        summary[name] = {"min": min(values), "max": max(values), "range": max(values) - min(values)}
+
+    return summary

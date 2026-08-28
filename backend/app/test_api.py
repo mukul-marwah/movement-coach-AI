@@ -20,7 +20,8 @@ movement_data = mmfit_3d_to_movement_data(squat_data)
 features = mmfit_squat_features(movement_data)
 movement_signal = build_movement_signal(features)
 
-payload = json.dumps({"sequence": sequence.tolist(), "movement_signal": movement_signal}).encode("utf-8")
+payload = json.dumps({"sequence": sequence.tolist(), "movement_signal": movement_signal, 
+                      "movement_analysis": features}).encode("utf-8")
 request = urllib.request.Request("http://127.0.0.1:8000/analyze",
     data=payload,
     headers={"Content-Type": "application/json"},
