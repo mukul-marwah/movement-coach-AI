@@ -2,6 +2,8 @@ import numpy as np
 from pydantic import BaseModel
 from fastapi import FastAPI
 from dotenv import load_dotenv
+from app.agents.orchestrator import run_workout_planner
+from app.workout_schema import WorkoutPlanRequest
 
 load_dotenv()
 
@@ -28,3 +30,8 @@ def analyze(request: AnalyzeRequest):
     result["coaching"] = coaching
 
     return result
+
+@app.post("/plan")
+def generate_plan(request: WorkoutPlanRequest):
+    plan = run_workout_planner(request)
+    return plan
