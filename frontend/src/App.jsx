@@ -1,9 +1,32 @@
-function App(){
+import React from 'react';
+import Navigation from './components/Navigation';
+import Home from './pages/Home';
+import MovementCoach from './pages/MovementCoach';
+import WorkoutPlanner from './pages/WorkoutPlanner';
+
+function App() {
+  const [currentPage, setCurrentPage] = React.useState('home');
+
+  const renderPage = () => {
+    if (currentPage === "movement") {
+      return <MovementCoach />;
+    }
+
+    if (currentPage === "planner") {
+      return <WorkoutPlanner />;
+    }
+
+    return <Home onNavigate={setCurrentPage} />;
+  };
+
   return (
-    <div>
-      <h1>Movement Coach AI</h1>
-      <p>Building the future of visual movement coaching.</p>
-    </div>
+    <>
+      <Navigation
+        currentPage={currentPage}
+        onNavigate={setCurrentPage}
+      />
+      {renderPage()}
+    </>
   );
 }
 

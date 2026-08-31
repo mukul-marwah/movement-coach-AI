@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 from pydantic import BaseModel
 from fastapi import FastAPI
@@ -8,6 +9,13 @@ from app.workout_schema import WorkoutPlanRequest
 load_dotenv()
 
 app = FastAPI(title="Movement Coach AI")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 class AnalyzeRequest(BaseModel):
     sequence: list[list[list[float]]]
     movement_signal: list[dict] | None = None
