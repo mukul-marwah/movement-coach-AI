@@ -29,7 +29,10 @@ def build_movement_signal(
     signal = []
 
     for item in feature_series:
-        values = [item[name] for name in movement_features]
+        if exercise_id == "squats":
+            values = [item["left_knee_angle"], item["right_knee_angle"]]
+        else:
+            values = [item[name] for name in movement_features]
 
         signal.append(
             {

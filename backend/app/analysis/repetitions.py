@@ -1,116 +1,94 @@
-def _smooth(values, window=7):
-    if not values:
+import numpy as np
+
+
+def _smooth(values,window=3):
+    values=np.asarray(values,dtype=float)
+
+    if values.size==0:
         return []
 
-    smoothed = []
+    if values.size<window:
+        return values.tolist()
 
-    for i in range(len(values)):
-        start = max(0, i - window // 2)
-        end = min(len(values), i + window // 2 + 1)
+    kernel=np.ones(window)/window
+    smoothed=np.convolve(values,kernel,mode="same")
 
-        section = values[start:end]
-        smoothed.append(sum(section) / len(section))
+    half=window//2
+    for i in range(half):
+        smoothed[i]=np.mean(values[:i+half+1])
+        smoothed[-i-1]=np.mean(values[-i-half-1:])
 
-    return smoothed
-
-def estimate_cycle_length(movement_signal, min_lag=20, max_lag=80):
-    if not movement_signal:
-        return None
-
-    values = [record["value"] for record in movement_signal]
-
-    if len(values) < max_lag * 2:
-        return None
-
-    mean = sum(values) / len(values)
-    centered = [value - mean for value in values]
-
-    correlations = []
-    for lag in range(min_lag, max_lag + 1):
-        numerator = sum(centered[i] * centered[i - lag] for i in range(lag, len(centered)))
-        left_energy = sum(centered[i] ** 2 for i in range(lag, len(centered)))
-        right_energy = sum(centered[i - lag] ** 2 for i in range(lag, len(centered)))
-        denominator = (left_energy * right_energy) ** 0.5
-
-        if denominator == 0:
-            correlation = 0.0
-        else:
-            correlation = numerator / denominator
-
-        correlations.append((lag, correlation))
-
-    local_peaks = []
-
-    for i in range(1, len(correlations) - 1):
-        previous_score = correlations[i - 1][1]
-        current_score = correlations[i][1]
-        next_score = correlations[i + 1][1]
-        if current_score >= previous_score and current_score > next_score:
-            local_peaks.append(correlations[i])
-
-    if not local_peaks:
-        return max(correlations, key=lambda item: item[1])[0]
-
-    return max(local_peaks, key=lambda item: item[1])[0]
+    return smoothed.tolist()
 
 
-def detect_repetitions(movement_signal, cycle_length=None, smoothing_window=7,):
-    if not movement_signal:
+def detect_repetitions(movement_signal,cycle_length=None,smoothing_window=3):
+    if movement_signal is None or len(movement_signal)<5:
         return []
 
-    values = [record["value"] for record in movement_signal]
+    values=np.asarray(
+        [record["value"] for record in movement_signal],
+        dtype=float,
+    )
 
-    smoothed = _smooth(values, smoothing_window)
+    if not np.all(np.isfinite(values)):
+        values=np.nan_to_num(values)
 
-    if cycle_length is None:
-        cycle_length = estimate_cycle_length(movement_signal)
+    smoothed=_smooth(values,smoothing_window)
 
-    if cycle_length is None:
+    if len(smoothed)<5:
         return []
 
-    min_distance = max(10, int(cycle_length * 0.65))
+    value_range=float(np.max(smoothed)-np.min(smoothed))
 
-    value_range = max(smoothed) - min(smoothed)
-
-    if value_range <= 0:
+    if value_range<10:
         return []
 
-    prominence_threshold = value_range * 0.10
+    minimum=float(np.min(smoothed))
+    maximum=float(np.max(smoothed))
 
-    candidates = []
+    bottom_threshold=minimum+value_range*0.45
+    rise_threshold=minimum+value_range*0.15
 
-    for i in range(1, len(smoothed) - 1):
-        if smoothed[i] <= smoothed[i - 1] and smoothed[i] < smoothed[i + 1]:
-            left_max = max(smoothed[max(0, i - cycle_length):i + 1])
-            right_max = max(smoothed[i:min(len(smoothed), i + cycle_length + 1)])
+    repetitions=[]
+    bottom_index=None
 
-            prominence = min(left_max - smoothed[i], right_max - smoothed[i])
+    for i in range(1,len(smoothed)-1):
+        current=smoothed[i]
+        previous=smoothed[i-1]
+        next_value=smoothed[i+1]
 
-            if prominence >= prominence_threshold:
-                candidates.append(i)
+        if current<=previous and current<=next_value and current<=bottom_threshold:
+            if bottom_index is None:
+                bottom_index=i
+            elif i-bottom_index>=2 and current<smoothed[bottom_index]:
+                bottom_index=i
 
-    minima = []
+        elif bottom_index is not None:
+            rise=smoothed[i]-smoothed[bottom_index]
 
-    for candidate in candidates:
-        if not minima:
-            minima.append(candidate)
-            continue
+            if rise>=value_range*0.15:
+                record=movement_signal[bottom_index]
 
-        if candidate - minima[-1] >= min_distance:
-            minima.append(candidate)
-        elif smoothed[candidate] < smoothed[minima[-1]]:
-            minima[-1] = candidate
+                repetitions.append({
+                    "rep":len(repetitions)+1,
+                    "bottom_frame":record["frame"],
+                    "bottom_timestamp_ms":record["timestamp_ms"],
+                    "bottom_value":float(smoothed[bottom_index]),
+                })
 
-    repetitions = []
+                bottom_index=None
 
-    for index in minima:
-        record = movement_signal[index]
+    if bottom_index is not None and len(repetitions)<8:
+        rise=maximum-smoothed[bottom_index]
 
-        repetitions.append({
-            "rep": len(repetitions) + 1,
-            "bottom_frame": record["frame"],
-            "bottom_timestamp_ms": record["timestamp_ms"],
-            "bottom_value": smoothed[index],
-        })
+        if rise>=value_range*0.15:
+            record=movement_signal[bottom_index]
 
-    return repetitions
+            repetitions.append({
+                "rep":len(repetitions)+1,
+                "bottom_frame":record["frame"],
+                "bottom_timestamp_ms":record["timestamp_ms"],
+                "bottom_value":float(smoothed[bottom_index]),
+            })
+
+    return repetitions[:8]

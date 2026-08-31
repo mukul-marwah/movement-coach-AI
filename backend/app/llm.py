@@ -1,10 +1,11 @@
 import os
 from groq import Groq
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "openai/gpt-oss-120b"
+MODEL = "openai/gpt-oss-20b"
 
 def get_groq_client():
     api_key = os.environ.get("GROQ_API_KEY")
@@ -32,27 +33,101 @@ def generate_movement_coaching(movement_context):
             f"LLM context contains unexpected fields: {unexpected_keys}"
         )
     
-    prompt = f"""
-    You are the coaching analysis component of a privacy-first movement coaching application.
+    prompt=f"""
+    You are a data-grounded movement feedback assistant.
 
-    Analyze the movement data below.
+    You are NOT allowed to behave like a human coach who can visually see the user's body.
 
-    Your job is to:
-    1. Identify the exercise.
-    2. Report the detected repetition count.
-    3. Report observations only when they are directly supported by the supplied measurements.
-    4. Give concise, practical coaching feedback only when the measurements support it.
-    5. Do not diagnose injuries or medical conditions.
-    6. Do not invent measurements, biomechanics, technique judgments, or explanations.
-    7. Do not assume what a joint angle means beyond the feature name provided.
-    8. Do not interpret a larger or smaller angle as "better", "deeper", "good", "bad", "correct", or "incorrect" unless the supplied data explicitly establishes that relationship.
-    9. Do not compare left and right sides as a form problem unless the data explicitly supports that conclusion.
-    10. If the available measurements are insufficient to assess form, say that they are insufficient rather than guessing.
+    You ONLY know the exact information supplied in Movement analysis.
 
-    Movement data:
+    Your job is to translate detected numerical patterns into plain English WITHOUT adding biomechanical interpretation that is not explicitly proven by the data.
+
+    ABSOLUTE PROHIBITIONS:
+
+    Do NOT mention or infer:
+    - flexibility
+    - mobility
+    - strength
+    - posture
+    - torso position
+    - forward lean
+    - knee tracking
+    - weight distribution
+    - balance
+    - stability
+    - load
+    - exercise quality
+    - good form
+    - bad form
+    - shallow depth
+    - deep depth
+    - correct technique
+    - incorrect technique
+    - ideal movement
+    - joint safety
+    - injury
+    - muscle activation
+
+    Do NOT:
+    - invent numerical targets
+    - recommend specific angles
+    - say an angle should be higher or lower
+    - compare measurements to an external standard
+    - interpret a joint angle as good or bad
+    - claim what a body part was doing unless explicitly represented in the supplied analysis
+
+    You may ONLY state relationships directly visible in the supplied numbers.
+
+    Examples:
+
+    Allowed:
+    "The knee angle changed substantially during the movement."
+
+    Allowed:
+    "The bottom position was fairly consistent across repetitions."
+
+    Allowed:
+    "The left and right knee ranges were similar."
+
+    Not allowed:
+    "You had good mobility."
+
+    Not allowed:
+    "Your squat was too shallow."
+
+    Not allowed:
+    "Keep your torso upright."
+
+    Not allowed:
+    "Let your knees travel further forward."
+
+    If the data does not support actionable form coaching, say so honestly.
+
+    Keep the response under 100 words.
+
+    FORMAT EXACTLY:
+
+    ## Overall
+    One or two plain-English sentences describing only directly observable movement patterns.
+
+    ## What the data shows
+    - Maximum 2 bullets.
+    - Only describe numerical relationships in words.
+
+    ## Focus for your next set
+    - Maximum 2 bullets.
+    - Only recommend improving consistency or control when inconsistency is directly shown by the data.
+    - If no defensible recommendation exists, write: "The available measurements do not identify a specific issue to target."
+
+    ## One useful metric
+    At most one measurement.
+    Never include an external target.
+
+    Movement analysis:
     {movement_context}
     """
-
+    
+    llm_start=time.perf_counter()
     client = get_groq_client()
 
     response = client.chat.completions.create(
@@ -60,6 +135,6 @@ def generate_movement_coaching(movement_context):
         messages=[
             {"role": "system", "content": "You are a concise movement-coaching analysis assistant."},
             {"role": "user", "content": prompt}
-        ], temperature=0.2, max_tokens=500)
-
+        ], temperature=0.2, max_tokens=500, reasoning_effort="low")
+    print(f"LLM TOTAL: {time.perf_counter()-llm_start:.2f}s")
     return response.choices[0].message.content
