@@ -222,6 +222,55 @@ background: white;
   cursor: pointer;
 }
 
+.input-options {
+  margin-top: 24px;
+}
+
+.input-options h2 {
+  margin-bottom: 16px;
+}
+
+.input-options > button,
+.upload-button {
+  display: inline-block;
+  margin-right: 12px;
+  padding: 13px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
+
+.input-options > button:disabled,
+.upload-button:has(input:disabled) {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upload-button input {
+  display: none;
+}
+
+.recording-panel,
+.video-ready {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+}
+
+.recording-panel button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
 
 @media (max-width: 800px) {
 .exercise-grid {
@@ -237,4 +286,90 @@ padding: 50px 20px;
 .exercise-grid {
 grid-template-columns: 1fr;
 }
+}
+
+.camera-preview {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin: 20px 0;
+  border-radius: 10px;
+  background: #000;
+}
+
+.camera-error {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f5f5f5;
+}
+
+.video-ready button,
+.recording-panel button {
+  margin-top: 12px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
+
+.video-ready button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coaching{
+margin-top:24px;
+padding:24px;
+border:1px solid #e5e7eb;
+border-radius:16px;
+background:#f8fafc;
+}
+
+.coaching h3{
+margin:0 0 18px;
+font-size:20px;
+}
+
+.coaching-content{
+font-size:15px;
+line-height:1.65;
+color:#334155;
+}
+
+.coaching-content h1,
+.coaching-content h2,
+.coaching-content h3{
+margin:20px 0 8px;
+color:#0f172a;
+}
+
+.coaching-content h1:first-child,
+.coaching-content h2:first-child,
+.coaching-content h3:first-child{
+margin-top:0;
+}
+
+.coaching-content p{
+margin:10px 0;
+}
+
+.coaching-content ul{
+margin:8px 0 16px;
+padding-left:22px;
+}
+
+.coaching-content li{
+margin:6px 0;
+}
+
+.coaching-content strong{
+color:#0f172a;
+}
+
+.coaching-content em{
+color:#64748b;
 }
