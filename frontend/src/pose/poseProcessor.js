@@ -70,7 +70,9 @@ resolve();
 const frame=(now,metadata)=>{
 if(finished)return;
 
-const timestampMs=metadata.mediaTime*1000;
+const timestampMs=Math.max(
+    Math.round(metadata.mediaTime*1000), lastProcessed+1
+);
 
 if(timestampMs-lastProcessed>=TARGET_INTERVAL_MS){
 try{
