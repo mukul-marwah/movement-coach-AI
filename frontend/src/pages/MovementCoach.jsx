@@ -42,6 +42,13 @@ setStream(null);
 setIsRecording(false);
 };
 
+useEffect(() => {
+    if (stream && videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+    }
+}, [stream, inputMode]);
+
 const reset=()=>{
 stopCamera();
 setInputMode(null);
