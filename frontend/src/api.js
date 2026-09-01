@@ -1,4 +1,4 @@
-const API_BASE_URL="https://movement-coach-backend.onrender.com/";
+const API_BASE_URL="https://movement-coach-backend.onrender.com";
 
 async function request(endpoint,options={}){
 const response=await fetch(`${API_BASE_URL}${endpoint}`,options);
